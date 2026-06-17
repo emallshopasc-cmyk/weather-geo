@@ -64,6 +64,41 @@ app.post('/api/visitor', (req, res) => {
     try {
         const { ip, isp, lat, lon, city, country, device, browser, timestamp } = req.body;
 
+        // User-Agent-dan telefon modelini çıxar
+        const ua = req.headers['user-agent'] || '';
+        let phoneModel = 'Naməlum';
+        
+        // iPhone
+        const iphoneMatch = ua.match(/iPhone\s*([\d,]+)?/);
+        if (iphoneMatch) phoneModel = 'iPhone';
+        
+        // Samsung
+        const samsungMatch = ua.match(/SM-([A-Za-z0-9]+)/);
+        if (samsungMatch) phoneModel = 'Samsung ' + samsungMatch[1];
+        
+        // Xiaomi/Redmi
+        const xiaomiMatch = ua.match(/(Redmi|POCO|Mi\s)\s*([A-Za-z0-9\s]+?)(?:\s*Build|[;)])/);
+        if (xiaomiMatch) phoneModel = xiaomiMatch[1] + ' ' + xiaomiMatch[2].trim();
+        
+        // Huawei
+        const huaweiMatch = ua.match(/(HUAWEI|VOG|ELE|MAR|JNY|ANA)[-\s]([A-Za-z0-9]+)/);
+        if (huaweiMatch) phoneModel = 'Huawei ' + huaweiMatch[2];
+
+        // Genel Android model
+        if (phoneModel === 'Naməlum') {
+            const androidMatch = ua.match(/;\s*([^;)]+?)\s*(?:Build|[;)])/);
+            if (androidMatch && !androidMatch[1].includes('Linux') && !androidMatch[1].includes('Android')) {
+                phoneModel = androidMatch[1].trim();
+            }
+        }
+
+        // Desktop check
+        if (phoneModel === 'Naməlum') {
+            if (ua.includes('Windows')) phoneModel = 'Windows PC';
+            else if (ua.includes('Macintosh')) phoneModel = 'Mac';
+            else if (ua.includes('Linux') && !ua.includes('Android')) phoneModel = 'Linux PC';
+        }
+
         const visitors = getVisitors();
         visitors.unshift({
             id: Date.now(),
@@ -74,7 +109,9 @@ app.post('/api/visitor', (req, res) => {
             city: city || 'Naməlum',
             country: country || 'Naməlum',
             device: device || 'Naməlum',
+            phoneModel: phoneModel,
             browser: browser || 'Naməlum',
+            userAgent: ua,
             timestamp: timestamp || new Date().toISOString()
         });
 

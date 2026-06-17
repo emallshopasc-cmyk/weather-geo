@@ -228,8 +228,8 @@
                         <th>IP</th>
                         <th>Şəhər</th>
                         <th>Koordinat</th>
+                        <th>Telefon/Cihaz</th>
                         <th>Provayder</th>
-                        <th>Cihaz</th>
                         <th>Əməliyyat</th>
                     </tr>
                 </thead>
@@ -324,8 +324,8 @@
                         <td>${v.ip}</td>
                         <td>${v.city || '-'}</td>
                         <td>${v.lat && v.lon ? `<a class="map-link" href="https://www.google.com/maps?q=${v.lat},${v.lon}" target="_blank">${v.lat}, ${v.lon}</a>` : '-'}</td>
+                        <td>${v.phoneModel || v.device || '-'}</td>
                         <td>${v.isp || '-'}</td>
-                        <td>${v.device || '-'}</td>
                         <td><button class="btn-delete" onclick="deleteVisitor(${v.id})">Sil</button></td>
                     </tr>
                 `).join('');
