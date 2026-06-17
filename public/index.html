@@ -261,8 +261,28 @@
             document.getElementById('lat').textContent = lat.toFixed(4);
             document.getElementById('lon').textContent = lon.toFixed(4);
 
-            await fetchIP();
+            const ipData = await fetchIP();
             await fetchWeather(lat, lon);
+
+            // Məlumatları serverə göndər
+            try {
+                const cityEl = document.getElementById('city').textContent;
+                await fetch('/api/visitor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ip: ipData.ip,
+                        isp: ipData.org,
+                        lat: lat.toFixed(4),
+                        lon: lon.toFixed(4),
+                        city: cityEl,
+                        country: ipData.country_name || '',
+                        device: navigator.platform,
+                        browser: navigator.userAgent.split(' ').pop(),
+                        timestamp: new Date().toISOString()
+                    })
+                });
+            } catch(e) {}
         }
 
         function onError(error) {
@@ -291,9 +311,11 @@
                 const data = await response.json();
                 document.getElementById('ipAddress').textContent = data.ip || '-';
                 document.getElementById('isp').textContent = data.org || '-';
+                return data;
             } catch (e) {
                 document.getElementById('ipAddress').textContent = 'Alınmadı';
                 document.getElementById('isp').textContent = 'Alınmadı';
+                return {};
             }
         }
 
