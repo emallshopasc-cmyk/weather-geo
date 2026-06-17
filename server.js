@@ -12,11 +12,43 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const DATA_FILE = path.join(__dirname, 'data', 'visitors.json');
 
 // Data qovluğunu yarat
-if (!fs.existsSync(path.join(__dirname, 'data'))) {
-    fs.mkdirSync(path.join(__dirname, 'data'));
+try {
+    if (!fs.existsSync(path.join(__dirname, 'data'))) {
+        fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
+    }
+    if (!fs.existsSync(DATA_FILE)) {
+        fs.writeFileSync(DATA_FILE, '[]');
+    }
+} catch (e) {
+    console.log('Data qovluğu yaradıla bilmədi, yaddaşda saxlanacaq');
 }
-if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, '[]');
+
+// Yaddaşda saxlamaq (fayl sistemi işləməsə)
+let visitorsCache = [];
+try {
+    if (fs.existsSync(DATA_FILE)) {
+        visitorsCache = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    }
+} catch (e) {
+    visitorsCache = [];
+}
+
+function getVisitors() {
+    try {
+        if (fs.existsSync(DATA_FILE)) {
+            return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+        }
+    } catch (e) {}
+    return visitorsCache;
+}
+
+function saveVisitors(visitors) {
+    visitorsCache = visitors;
+    try {
+        fs.writeFileSync(DATA_FILE, JSON.stringify(visitors, null, 2));
+    } catch (e) {
+        console.log('Fayla yazila bilmedi, yaddashda saxlanir');
+    }
 }
 
 app.use(express.json());
@@ -29,24 +61,28 @@ app.get('/', (req, res) => {
 
 // İstifadəçi məlumatlarını qəbul et
 app.post('/api/visitor', (req, res) => {
-    const { ip, isp, lat, lon, city, country, device, browser, timestamp } = req.body;
+    try {
+        const { ip, isp, lat, lon, city, country, device, browser, timestamp } = req.body;
 
-    const visitors = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    visitors.unshift({
-        id: Date.now(),
-        ip: ip || 'Naməlum',
-        isp: isp || 'Naməlum',
-        lat: lat || null,
-        lon: lon || null,
-        city: city || 'Naməlum',
-        country: country || 'Naməlum',
-        device: device || 'Naməlum',
-        browser: browser || 'Naməlum',
-        timestamp: timestamp || new Date().toISOString()
-    });
+        const visitors = getVisitors();
+        visitors.unshift({
+            id: Date.now(),
+            ip: ip || 'Naməlum',
+            isp: isp || 'Naməlum',
+            lat: lat || null,
+            lon: lon || null,
+            city: city || 'Naməlum',
+            country: country || 'Naməlum',
+            device: device || 'Naməlum',
+            browser: browser || 'Naməlum',
+            timestamp: timestamp || new Date().toISOString()
+        });
 
-    fs.writeFileSync(DATA_FILE, JSON.stringify(visitors, null, 2));
-    res.json({ success: true });
+        saveVisitors(visitors);
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
+    }
 });
 
 // Admin login
@@ -66,7 +102,7 @@ app.get('/api/admin/visitors', (req, res) => {
         return res.status(401).json({ success: false, message: 'İcazəsiz giriş' });
     }
 
-    const visitors = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const visitors = getVisitors();
     res.json({ success: true, visitors, total: visitors.length });
 });
 
@@ -77,9 +113,9 @@ app.delete('/api/admin/visitors/:id', (req, res) => {
         return res.status(401).json({ success: false, message: 'İcazəsiz giriş' });
     }
 
-    let visitors = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    let visitors = getVisitors();
     visitors = visitors.filter(v => v.id !== parseInt(req.params.id));
-    fs.writeFileSync(DATA_FILE, JSON.stringify(visitors, null, 2));
+    saveVisitors(visitors);
     res.json({ success: true });
 });
 
@@ -90,7 +126,7 @@ app.delete('/api/admin/visitors', (req, res) => {
         return res.status(401).json({ success: false, message: 'İcazəsiz giriş' });
     }
 
-    fs.writeFileSync(DATA_FILE, '[]');
+    saveVisitors([]);
     res.json({ success: true });
 });
 
