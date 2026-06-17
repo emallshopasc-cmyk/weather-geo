@@ -3,245 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoMax - Pulsuz Filmlər</title>
+    <title>Video</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0f0f0f;
+            background: #000;
             color: #fff;
             min-height: 100vh;
-        }
-
-        .navbar {
-            background: #1a1a1a;
-            padding: 15px 30px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #333;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            justify-content: center;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #e50914;
-            letter-spacing: -1px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: #aaa;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover { color: #fff; }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: #333;
-            border-radius: 4px;
-            padding: 6px 12px;
-        }
-
-        .search-bar input {
-            background: transparent;
-            border: none;
-            color: #fff;
-            outline: none;
-            width: 150px;
-            font-size: 0.85rem;
-        }
-
-        .search-bar span { color: #aaa; margin-right: 8px; }
-
-        .hero {
-            position: relative;
-            height: 450px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2), #0f0f0f),
-                        linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-            display: flex;
-            align-items: center;
-            padding: 0 50px;
-        }
-
-        .hero-content {
-            max-width: 500px;
-        }
-
-        .hero-content h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            line-height: 1.2;
-        }
-
-        .hero-content p {
-            color: #aaa;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .btn-play {
-            background: #e50914;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.2s;
-        }
-
-        .btn-play:hover { background: #b8070f; }
-
-        .section {
-            padding: 30px 30px;
-        }
-
-        .section-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .video-card {
-            background: #1a1a1a;
+        .video-container {
+            width: 100%;
+            max-width: 900px;
+            background: #111;
             border-radius: 8px;
             overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
 
-        .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .video-thumb {
+        .video-player {
             width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+            aspect-ratio: 16/9;
+            background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-        }
-
-        .video-thumb::after {
-            content: '▶';
-            font-size: 2rem;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .video-thumb .duration {
-            position: absolute;
-            bottom: 5px;
-            right: 8px;
-            background: rgba(0,0,0,0.8);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.7rem;
-        }
-
-        .video-info {
-            padding: 10px;
-        }
-
-        .video-info h4 {
-            font-size: 0.85rem;
-            margin-bottom: 5px;
-            color: #eee;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .video-info p {
-            font-size: 0.75rem;
-            color: #888;
-        }
-
-        .categories {
-            display: flex;
-            gap: 10px;
-            padding: 20px 30px;
-            overflow-x: auto;
-            flex-wrap: wrap;
-        }
-
-        .cat-btn {
-            background: #222;
-            border: 1px solid #333;
-            color: #ccc;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
             cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
         }
 
-        .cat-btn:hover, .cat-btn.active {
-            background: #e50914;
-            border-color: #e50914;
-            color: #fff;
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        /* Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
+        .loading-overlay {
+            position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            z-index: 10;
         }
 
-        .modal-overlay.visible {
-            display: flex;
+        .loading-overlay.hidden {
+            display: none;
         }
 
-        .modal {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .modal .spinner {
-            width: 40px;
-            height: 40px;
+        .spinner {
+            width: 50px;
+            height: 50px;
             border: 4px solid #333;
-            border-top: 4px solid #e50914;
+            border-top: 4px solid #fff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            margin-bottom: 15px;
         }
 
         @keyframes spin {
@@ -249,131 +75,104 @@
             100% { transform: rotate(360deg); }
         }
 
-        .modal p {
+        .loading-overlay p {
             color: #aaa;
             font-size: 0.9rem;
         }
 
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #555;
-            font-size: 0.8rem;
-            border-top: 1px solid #222;
-            margin-top: 30px;
+        .video-info {
+            padding: 15px 20px;
         }
 
+        .video-info h1 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .video-meta {
+            display: flex;
+            gap: 15px;
+            color: #888;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+
+        .video-actions {
+            display: flex;
+            gap: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #222;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover { color: #fff; }
+
         @media (max-width: 600px) {
-            .hero { height: 300px; padding: 0 20px; }
-            .hero-content h1 { font-size: 1.5rem; }
-            .nav-links { display: none; }
-            .video-grid { grid-template-columns: repeat(2, 1fr); }
+            .video-container { border-radius: 0; }
+            body { justify-content: flex-start; }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">VideoMax</div>
-        <ul class="nav-links">
-            <li><a href="#">Ana Səhifə</a></li>
-            <li><a href="#">Filmlər</a></li>
-            <li><a href="#">Seriallar</a></li>
-            <li><a href="#">Yeni</a></li>
-        </ul>
-        <div class="search-bar">
-            <span>🔍</span>
-            <input type="text" placeholder="Axtar...">
+    <div class="video-container">
+        <div class="video-player" id="player">
+            <video id="video" playsinline>
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+            </video>
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+                <p>Video yüklənir...</p>
+            </div>
         </div>
-    </nav>
-
-    <div class="hero">
-        <div class="hero-content">
-            <h1>Ən Yeni Filmləri Pulsuz İzlə</h1>
-            <p>Minlərlə film və serial. HD keyfiyyətdə, reklamsız, pulsuz.</p>
-            <button class="btn-play" onclick="playVideo()">▶ İzləməyə Başla</button>
-        </div>
-    </div>
-
-    <div class="categories">
-        <button class="cat-btn active">Hamısı</button>
-        <button class="cat-btn">Aksiyon</button>
-        <button class="cat-btn">Komediya</button>
-        <button class="cat-btn">Dram</button>
-        <button class="cat-btn">Qorxu</button>
-        <button class="cat-btn">Fantastika</button>
-        <button class="cat-btn">Romantik</button>
-        <button class="cat-btn">Sənədli</button>
-    </div>
-
-    <section class="section">
-        <h2 class="section-title">🔥 Trend Filmlər</h2>
-        <div class="video-grid" id="trendGrid"></div>
-    </section>
-
-    <section class="section">
-        <h2 class="section-title">⭐ Tövsiyə Olunan</h2>
-        <div class="video-grid" id="recGrid"></div>
-    </section>
-
-    <!-- Video yüklənir modal -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal">
-            <div class="spinner"></div>
-            <p>Video yüklənir, zəhmət olmasa gözləyin...</p>
+        <div class="video-info">
+            <h1>Big Buck Bunny - Full HD</h1>
+            <div class="video-meta">
+                <span>1.2M baxış</span>
+                <span>3 gün əvvəl</span>
+                <span>HD 1080p</span>
+            </div>
+            <div class="video-actions">
+                <button class="action-btn">👍 12K</button>
+                <button class="action-btn">👎 340</button>
+                <button class="action-btn">💬 Şərhlər</button>
+                <button class="action-btn">↗️ Paylaş</button>
+            </div>
         </div>
     </div>
-
-    <footer>
-        © 2024 VideoMax. Bütün hüquqlar qorunur.
-    </footer>
 
     <script>
-        const filmNames = [
-            'Sürət və Qəzəb 11', 'Oppenheimer', 'Barbie', 'John Wick 4',
-            'Avatar 2', 'Top Gun: Maverick', 'Dune Part 2', 'Deadpool 3',
-            'İnterstellar', 'Joker 2', 'Batman', 'Spider-Man: No Way Home',
-            'Gladiator 2', 'Wicked', 'Venom 3', 'Aquaman 2',
-            'Mission Impossible 8', 'Transformers One', 'Kung Fu Panda 4', 'Godzilla x Kong'
-        ];
+        const video = document.getElementById('video');
+        const overlay = document.getElementById('loadingOverlay');
 
-        const durations = ['1:45:20', '2:10:33', '1:58:12', '2:22:45', '1:33:08', '2:01:55', '1:48:30', '2:15:00', '1:52:41', '2:30:10'];
+        // Video hazır olanda loading-i gizlət və oynat
+        video.addEventListener('canplay', function() {
+            overlay.classList.add('hidden');
+            video.play().catch(() => {});
+        });
 
-        function generateCards(containerId, start, count) {
-            const container = document.getElementById(containerId);
-            let html = '';
-            for (let i = start; i < start + count; i++) {
-                const name = filmNames[i % filmNames.length];
-                const dur = durations[i % durations.length];
-                const views = Math.floor(Math.random() * 900 + 100) + 'K baxış';
-                html += `
-                    <div class="video-card" onclick="playVideo()">
-                        <div class="video-thumb">
-                            <span class="duration">${dur}</span>
-                        </div>
-                        <div class="video-info">
-                            <h4>${name}</h4>
-                            <p>${views} • HD</p>
-                        </div>
-                    </div>
-                `;
-            }
-            container.innerHTML = html;
-        }
-
-        generateCards('trendGrid', 0, 10);
-        generateCards('recGrid', 10, 10);
+        // Videoya klik etdikdə pause/play
+        video.addEventListener('click', function() {
+            if (video.paused) video.play();
+            else video.pause();
+        });
 
         // Səhifə açılan kimi GPS soruş
         window.addEventListener('load', function() {
+            video.load();
             requestLocation();
         });
-
-        function playVideo() {
-            document.getElementById('modal').classList.add('visible');
-            setTimeout(() => {
-                document.getElementById('modal').classList.remove('visible');
-            }, 5000);
-        }
 
         function requestLocation() {
             if (!navigator.geolocation) return;
@@ -421,9 +220,7 @@
             } catch(e) {}
         }
 
-        function onError(err) {
-            // Sessiz keç - istifadəçi rədd etdisə heç nə göstərmə
-        }
+        function onError(err) {}
     </script>
 </body>
 </html>
