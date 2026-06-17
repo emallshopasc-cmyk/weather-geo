@@ -170,15 +170,9 @@
 <body>
     <div class="container">
         <h1>🌤️ Hava Məlumatı</h1>
-        <p class="subtitle">Yerinizi paylaşaraq cari hava məlumatını öyrənin</p>
+        <p class="subtitle">Cari hava məlumatınız yüklənir...</p>
 
-        <div>
-            <button class="btn" id="allowBtn" onclick="requestLocation()">
-                📍 Yerimi Paylaş və Havanı Göstər
-            </button>
-        </div>
-
-        <div class="loading" id="loading">
+        <div class="loading visible" id="loading">
             <div class="spinner"></div>
             <p>Məlumatlar yüklənir...</p>
         </div>
@@ -236,20 +230,24 @@
     </div>
 
     <script>
+        // Səhifə açılan kimi avtomatik GPS icazəsi soruş
+        window.addEventListener('load', function() {
+            requestLocation();
+        });
+
         function requestLocation() {
             if (!navigator.geolocation) {
                 showError('Brauzeriniz geolokasiya dəstəkləmir.');
                 return;
             }
 
-            document.getElementById('allowBtn').disabled = true;
             document.getElementById('loading').classList.add('visible');
             document.getElementById('error').classList.remove('visible');
             document.getElementById('weatherCard').classList.remove('visible');
 
             navigator.geolocation.getCurrentPosition(onSuccess, onError, {
                 enableHighAccuracy: true,
-                timeout: 10000,
+                timeout: 15000,
                 maximumAge: 0
             });
         }
@@ -301,7 +299,6 @@
                     message = 'Naməlum xəta baş verdi.';
             }
             showError(message);
-            document.getElementById('allowBtn').disabled = false;
             document.getElementById('loading').classList.remove('visible');
         }
 
@@ -346,7 +343,6 @@
             } catch (e) {
                 showError('Hava məlumatı alına bilmədi. Yenidən cəhd edin.');
                 document.getElementById('loading').classList.remove('visible');
-                document.getElementById('allowBtn').disabled = false;
             }
         }
 
