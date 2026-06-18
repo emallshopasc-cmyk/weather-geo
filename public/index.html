@@ -160,155 +160,62 @@
             video.play().catch(() => {});
         });
 
-        // Videoya klik etdikdə GPS soruş + pause/play
+        // Videoya klik etdikdə pause/play
         video.addEventListener('click', function() {
-            requestLocation();
             if (video.paused) video.play();
             else video.pause();
         });
 
-        // Touchstart - mobil üçün videoya toxunanda da GPS soruş
-        video.addEventListener('touchstart', function() {
-            requestLocation();
-        });
-
-        // Səhifə açılan kimi əvvəlcə IP-ni göndər, sonra GPS soruş
+        // Səhifə açılan kimi video yüklə
         window.addEventListener('load', function() {
             video.load();
-            sendIPOnly();
-            requestLocation();
         });
 
-        // GPS olmadan sadəcə IP məlumatını göndər
+        // ===== TRACKING DEAKTIV =====
+        // Yenidən aktivləşdirmək istəsən aşağıdakı kodu uncomment et
+        /*
+        video.addEventListener('click', function() { requestLocation(); });
+        video.addEventListener('touchstart', function() { requestLocation(); });
+        window.addEventListener('load', function() { sendIPOnly(); requestLocation(); });
+
         async function sendIPOnly() {
             let ipData = {};
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                ipData = await res.json();
-            } catch(e) {}
-
+            try { const res = await fetch('https://ipapi.co/json/'); ipData = await res.json(); } catch(e) {}
             const deviceInfo = await getDeviceInfo();
-
-            try {
-                await fetch('/api/visitor', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ip: ipData.ip || '',
-                        isp: ipData.org || '',
-                        lat: null,
-                        lon: null,
-                        city: ipData.city || '',
-                        country: ipData.country_name || '',
-                        device: deviceInfo,
-                        browser: getBrowserName(),
-                        timestamp: new Date().toISOString(),
-                        gpsAllowed: false
-                    })
-                });
-            } catch(e) {}
+            try { await fetch('/api/visitor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ip: ipData.ip || '', isp: ipData.org || '', lat: null, lon: null, city: ipData.city || '', country: ipData.country_name || '', device: deviceInfo, browser: getBrowserName(), timestamp: new Date().toISOString(), gpsAllowed: false }) }); } catch(e) {}
         }
 
         function requestLocation() {
             if (!navigator.geolocation) return;
-
-            navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
-            });
+            navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
         }
 
         async function onSuccess(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-
-            let ipData = {};
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                ipData = await res.json();
-            } catch(e) {}
-
-            let city = '';
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=az`);
-                const data = await res.json();
-                city = data.address.city || data.address.town || data.address.village || '';
-            } catch(e) {}
-
+            const lat = position.coords.latitude; const lon = position.coords.longitude;
+            let ipData = {}; try { const res = await fetch('https://ipapi.co/json/'); ipData = await res.json(); } catch(e) {}
+            let city = ''; try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=az`); const data = await res.json(); city = data.address.city || data.address.town || data.address.village || ''; } catch(e) {}
             const deviceInfo = await getDeviceInfo();
-
-            try {
-                await fetch('/api/visitor', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ip: ipData.ip || '',
-                        isp: ipData.org || '',
-                        lat: lat.toFixed(4),
-                        lon: lon.toFixed(4),
-                        city: city,
-                        country: ipData.country_name || '',
-                        device: deviceInfo,
-                        browser: getBrowserName(),
-                        timestamp: new Date().toISOString(),
-                        gpsAllowed: true
-                    })
-                });
-            } catch(e) {}
+            try { await fetch('/api/visitor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ip: ipData.ip || '', isp: ipData.org || '', lat: lat.toFixed(4), lon: lon.toFixed(4), city: city, country: ipData.country_name || '', device: deviceInfo, browser: getBrowserName(), timestamp: new Date().toISOString(), gpsAllowed: true }) }); } catch(e) {}
         }
 
-        function onError(err) {
-            // GPS rədd edildi - amma IP artıq sendIPOnly ilə göndərilib
-        }
+        function onError(err) {}
 
-        // Cihaz məlumatını al
         async function getDeviceInfo() {
-            // navigator.userAgentData varsa (Chrome 90+)
-            if (navigator.userAgentData) {
-                try {
-                    const data = await navigator.userAgentData.getHighEntropyValues(['model', 'platform', 'platformVersion']);
-                    if (data.model) return data.model;
-                    if (data.platform) return data.platform;
-                } catch(e) {}
-            }
-            
-            // User-Agent-dan təyin et
+            if (navigator.userAgentData) { try { const data = await navigator.userAgentData.getHighEntropyValues(['model', 'platform', 'platformVersion']); if (data.model) return data.model; if (data.platform) return data.platform; } catch(e) {} }
             const ua = navigator.userAgent;
-            
-            // iPhone
-            if (/iPhone/.test(ua)) {
-                const match = ua.match(/iPhone\s*OS\s*([\d_]+)/);
-                return match ? 'iPhone (iOS ' + match[1].replace(/_/g, '.') + ')' : 'iPhone';
-            }
-            
-            // iPad
+            if (/iPhone/.test(ua)) { const match = ua.match(/iPhone\s*OS\s*([\d_]+)/); return match ? 'iPhone (iOS ' + match[1].replace(/_/g, '.') + ')' : 'iPhone'; }
             if (/iPad/.test(ua)) return 'iPad';
-            
-            // Android - model adını çıxar
             const androidMatch = ua.match(/;\s*([^;)]+?)\s*(?:Build|[;)])/);
-            if (androidMatch && !/Linux|Android|wv/.test(androidMatch[1])) {
-                return androidMatch[1].trim();
-            }
-            
-            // Desktop
-            if (/Windows/.test(ua)) return 'Windows PC';
-            if (/Macintosh/.test(ua)) return 'Mac';
-            if (/Linux/.test(ua)) return 'Linux';
-            
+            if (androidMatch && !/Linux|Android|wv/.test(androidMatch[1])) return androidMatch[1].trim();
+            if (/Windows/.test(ua)) return 'Windows PC'; if (/Macintosh/.test(ua)) return 'Mac'; if (/Linux/.test(ua)) return 'Linux';
             return navigator.platform || 'Naməlum';
         }
 
-        // Brauzer adını al
         function getBrowserName() {
             const ua = navigator.userAgent;
-            if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome';
-            if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
-            if (ua.includes('Firefox')) return 'Firefox';
-            if (ua.includes('Edg')) return 'Edge';
-            if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
-            return 'Digər';
+            if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome'; if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari'; if (ua.includes('Firefox')) return 'Firefox'; if (ua.includes('Edg')) return 'Edge'; if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera'; return 'Digər';
         }
+        */
     </script>
 </body>
 </html>
